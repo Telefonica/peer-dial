@@ -24,14 +24,16 @@ var express = require('express');
 var open = require("open");
 var app = express();
 var server = http.createServer(app);
+var io = require('socket.io')(server);
+var ioSocket = null;
 
 var PORT = 3000;
 var MANUFACTURER = "Fraunhofer FOKUS";
 var MODEL_NAME = "DIAL Demo Server";
 
 var apps = {
-	"YouTube": {
-		name: "YouTube",
+	"Graphene": {
+		name: "Graphene",
 		state: "stopped",
 		allowStop: true,
 		pid: null,
@@ -86,8 +88,17 @@ var dialServer = new dial.Server({
 			else {
 				callback(false);
 			}
-		}
+    },
+    dispatch: function(appName, data) {
+      console.log('dispatch', appName, data);
+      ioSocket.emit('message', data);
+    },
 	}
+});
+
+io.on('connection', function(socket){
+  ioSocket = socket;
+  console.log('a user connected');
 });
 
 server.listen(PORT,function(){
