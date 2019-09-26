@@ -21,6 +21,7 @@
 var dial = require("../index.js");
 var http = require('http');
 var express = require('express');
+var bodyParser = require('body-parser');
 var open = require("open");
 var app = express();
 var server = http.createServer(app);
@@ -30,6 +31,8 @@ var ioSocket = null;
 var PORT = 3000;
 var MANUFACTURER = "Fraunhofer FOKUS";
 var MODEL_NAME = "DIAL Demo Server";
+
+app.use(bodyParser.text());
 
 var apps = {
 	"Graphene": {
@@ -47,7 +50,11 @@ var apps = {
         }*/
         launch: function (launchData) {
             open("http://www.youtube.com/tv?"+launchData);
-        }
+        },
+        dispatch: function(data) {
+          console.log('dispatch', this.name, data);
+          ioSocket.emit('message', data);
+        },        
 	}
 };
 var dialServer = new dial.Server({
@@ -65,15 +72,18 @@ var dialServer = new dial.Server({
 			var app = apps[appName];
 			return app;
 		},
-		launchApp: function(appName,lauchData,callback){
-			console.log("Got request to launch", appName," with launch data: ", lauchData);
+		launchApp: function(appName,launchData,callback){
+			console.log("Got request to launch", appName," with launch data: ", launchData);
 			var app = apps[appName];
 			var pid = null;
 			if (app) {
-				app.pid = "run";
-				app.state = "starting";
-                app.launch(lauchData);
-                app.state = "running";
+        if (app.state !== "running") {
+          app.pid = "run";
+          app.state = "starting";
+          app.launch(launchData);
+          app.state = "running";
+        }
+        app.dispatch(launchData);
 			}
 			callback(app.pid);
 		},
@@ -88,10 +98,6 @@ var dialServer = new dial.Server({
 			else {
 				callback(false);
 			}
-    },
-    dispatch: function(appName, data) {
-      console.log('dispatch', appName, data);
-      ioSocket.emit('message', data);
     },
 	}
 });
