@@ -32,7 +32,7 @@ var PORT = 3000;
 var MANUFACTURER = "Fraunhofer FOKUS";
 var MODEL_NAME = "DIAL Demo Server";
 
-app.use(bodyParser.text());
+app.use(bodyParser.urlencoded());
 
 var apps = {
 	"Graphene": {
