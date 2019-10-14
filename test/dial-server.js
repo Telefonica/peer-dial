@@ -32,8 +32,6 @@ var PORT = 3000;
 var MANUFACTURER = "Fraunhofer FOKUS";
 var MODEL_NAME = "DIAL Demo Server";
 
-app.use(bodyParser.urlencoded());
-
 var apps = {
 	"Graphene": {
 		name: "Graphene",
@@ -58,8 +56,8 @@ var apps = {
 	}
 };
 var dialServer = new dial.Server({
-	expressApp: app,
-	port: PORT,
+  expressApp: app,
+  port: PORT,
   prefix: "/dial",
 	corsAllowOrigins: "*",
 	manufacturer: MANUFACTURER,
