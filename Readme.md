@@ -182,3 +182,4 @@ Free for non commercial use released under the GNU Lesser General Public License
 Contact us for commecial use famecontact@fokus.fraunhofer.de
 
 Copyright (c) 2015 Fraunhofer FOKUS
+
